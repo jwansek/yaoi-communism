@@ -1,15 +1,7 @@
-# yuri communism twitter bot 
+# yaoi communism twitter bot 
 
-bot that adds quotes on (anime) images. uses [facial detection](https://github.com/qhgz2013/anime-face-detector) to try to prevent text from getting over anime character's face
+Forked from the yuri version.
 
-## steps
-
-- `conda env create -f envs/environment.yml`
-- `conda env create -f envs/environment-detect.yml`
-- `conda activate yuribot `
-- `python provision.py`
-- setup [anime-face-detector](https://github.com/qhgz2013/anime-face-detector)
-- move [anime-face-detector](https://github.com/qhgz2013/anime-face-detector) `models` to base
-- `python bot.py`
-
-![example image](https://pbs.twimg.com/media/EWa1e1wWsAA6Vt0?format=jpg)
+Unlike the yuri version, we don't have an archive of images and sources
+to use. Instead, download yaoi images on the fly from safebooru.org.
+Designed to be run once an hour using a cron job.
