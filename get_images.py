@@ -1,15 +1,15 @@
-from lxml import etree
+from dataclasses import dataclass
 from io import StringIO
-# import xml.etree.ElementTree as etree
+from lxml import etree
 import requests
 import urllib
-from http.cookiejar import LWPCookieJar
-from dataclasses import dataclass
 import random
 import time
+import cv2
+import os
 
 # all of these tags are added to all queries. Preceded with '-' to blacklist
-base_tags = ["yaoi", "-muscle"]
+base_tags = ["yaoi", "-muscle", "-comic"]
 # one of these will be added
 search_tags = ["looking_at_another", "kiss", "trap", "2boys", "promare"]
 
@@ -67,8 +67,30 @@ def get_num_pages(tags):
     else:
         return int(int(urllib.parse.parse_qs(page_element.get("href"))["pid"][0]) / (5*8))
 
+@dataclass
+class DownloadedImage:
+    imurl: str
+    
+    def __enter__(self):
+        self.filename = urllib.parse.urlparse(self.imurl).path.split("/")[-1]
+
+        req = urllib.request.Request(self.imurl, headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_5_8) AppleWebKit/534.50.2 (KHTML, like Gecko) Version/5.0.6 Safari/533.22.3'})
+        mediaContent = urllib.request.urlopen(req).read()
+        with open(self.filename, "wb") as f:
+            f.write(mediaContent)
+        return self.filename
+
+    def __exit__(self, type, value, traceback):
+        os.remove(self.filename)
+
 if __name__ == "__main__":
-    # get_page_images(tags = ["yaoi"])
-    print(get_image(get_random_searchtag()))
+    # print(get_image(get_random_searchtag()))
+
+    simg = get_image(get_random_searchtag())
+    with DownloadedImage(simg.imurl) as impath:
+        img = cv2.imread(impath)
+
+        cv2.imshow("img, ", img)
+        cv2.waitkey(0)
 
 
