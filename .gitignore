@@ -3,3 +3,8 @@ pics/*[.png,.jpg,.jpeg]
 __pycache__/
 api.py
 .ipynb_checkpoints/
+posted_images.csv
+*.png
+*.jpg
+*.log
+config.json

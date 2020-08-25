@@ -7,6 +7,7 @@ import random
 import subprocess
 import json
 from colorthief import ColorThief
+import get_images
 
 
 def draw_with_border(x, y, message, color_fill, color_border, font, draw):
@@ -95,7 +96,7 @@ def get_colors(file_name):
     return color_thief.get_palette(color_count=2, quality=1)
 
 
-def randomize_location(image, messages, font):
+def randomize_location(image, messages, font, faces):
     image_size = image.size
     x_coordinate = 0
     y_coordinate = 0
@@ -110,8 +111,6 @@ def randomize_location(image, messages, font):
     # randomize locations that still fit
     placed = False
     tries = 0
-    faces = detect(image.filename)
-    print("faces found:", len(faces))
     while placed is False and tries < 20:
         placed = True
         x = random.randrange(0, image_size[0] - x_coordinate)
@@ -120,7 +119,7 @@ def randomize_location(image, messages, font):
             if is_intersected(face, (x, y, x + x_coordinate, y + y_coordinate)):
                 placed = False
         tries = tries + 1
-    print("tried:", tries)
+    get_images.logging.info("tried: %i" % tries)
     return (x, y, len(faces))
 
 

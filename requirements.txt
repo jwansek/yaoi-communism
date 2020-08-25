@@ -1,8 +1,7 @@
-lxml==4.5.2
-requests==2.21.0
-opencv_python==4.4.0.42
-api==0.0.7
-colorthief==0.2.1
-Pillow==7.2.0
 Shapely==1.7.1
-twython==3.8.2
+requests==2.21.0
+colorthief==0.2.1
+lxml==4.5.2
+dataclasses==0.7
+Pillow==7.2.0
+TwitterAPI==2.5.13

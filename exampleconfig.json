@@ -1,0 +1,13 @@
+{
+    "logpath": "yc.log",
+    "blacklist": "posted_images.csv",
+    "texts": "texts/quotes.txt",
+    "base_tags": ["yaoi", "-muscle", "-comic", "-text"],
+    "search_tags": ["looking_at_another", "kiss", "trap", "2boys", "promare"],
+    "twitterapi":{
+        "consumer_key": "xxxxxxxxxxxxxxxxxxx",
+        "consumer_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "access_token": "xxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxx",
+        "access_token_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+}

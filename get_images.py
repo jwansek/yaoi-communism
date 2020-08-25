@@ -1,17 +1,32 @@
 from dataclasses import dataclass
+from PIL import Image, ImageDraw
 from io import StringIO
 from lxml import etree
 import requests
+import logging
 import urllib
 import random
+import utils
 import time
+import json
 import cv2
 import os
 
+with open("config.json", "r") as f:
+    CONFIG = json.load(f)
+
+logging.basicConfig( 
+    format = "%(levelname)s\t[%(asctime)s]\t%(message)s", 
+    level = logging.INFO,
+    handlers=[
+        logging.FileHandler(CONFIG["logpath"]),
+        logging.StreamHandler()
+    ])
+
 # all of these tags are added to all queries. Preceded with '-' to blacklist
-base_tags = ["yaoi", "-muscle", "-comic"]
+base_tags = CONFIG["base_tags"]
 # one of these will be added
-search_tags = ["looking_at_another", "kiss", "trap", "2boys", "promare"]
+search_tags = CONFIG["search_tags"]
 
 def get_random_searchtag():
     return [random.choice(search_tags)]
@@ -30,7 +45,10 @@ def get_image(tags):
     search_url = "https://safebooru.org/index.php?page=post&s=list&tags=%s&pid=%i" % ("+".join(base_tags+tags), (random.randint(1, get_num_pages(tags))-1)*5*8)
     tree = etree.parse(StringIO(requests.get(search_url).text), etree.HTMLParser())
     elements = [e for e in tree.xpath("/html/body/div[6]/div/div[2]/div[1]")[0].iter(tag = "a")]
-    element = random.choice(elements)
+    try:
+        element = random.choice(elements)
+    except IndexError:
+        raise ConnectionError("Couldn't find any images")
     simg = SafebooruImage(
         id = get_id_from_url(element.get("href")),
         tags = element.find("img").get("alt").split(),
@@ -67,6 +85,16 @@ def get_num_pages(tags):
     else:
         return int(int(urllib.parse.parse_qs(page_element.get("href"))["pid"][0]) / (5*8))
 
+def append_blacklisted(id_):
+    with open(CONFIG["blacklist"], "a") as f:
+        f.write(str(id_) + "\n")
+
+def id_is_blacklisted(id_):
+    if not os.path.exists(CONFIG["blacklist"]):
+        return False
+    with open(CONFIG["blacklist"], "r") as f:
+        return str(id_) in f.read().splitlines()
+
 @dataclass
 class DownloadedImage:
     imurl: str
@@ -83,11 +111,20 @@ class DownloadedImage:
     def __exit__(self, type, value, traceback):
         os.remove(self.filename)
 
-def main():
+def main(draw_faces = False):
     try:
         simg = get_image(get_random_searchtag())
     except ConnectionError:
+        logging.warning("Retried since couldn't get source...")
         main()
+        return
+
+    if id_is_blacklisted(simg.id):
+        logging.info("Retried, already posted image...")
+        main()
+        return
+
+    append_blacklisted(simg.id)
 
     with DownloadedImage(simg.imurl) as impath:
         img = cv2.imread(impath)
@@ -101,14 +138,32 @@ def main():
                                         scaleFactor = 1.1,
                                         minNeighbors = 5,
                                         minSize = (24, 24))
-        for (x, y, w, h) in faces:
-            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
+        if draw_faces:
+            for (x, y, w, h) in faces:
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-        cv2.imshow("Press <q> to exit", img)
-        cv2.waitKey(0)
+        logging.info("Found image %i faces, id: %i" % (len(faces), simg.id))
+
+        pilimg = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        text = utils.get_quote(CONFIG["texts"])
+        logging.info(text)
+        font = utils.set_font(pilimg, text)
+        draw = ImageDraw.Draw(pilimg)
+        lines = utils.messages_multiline(text, font, pilimg)
+        colours = utils.get_colors(impath)
+
+        (x, y, faces) = utils.randomize_location(pilimg, lines, font, faces)
+        for line in lines:
+            height = font.getsize(line[1])[1]
+            utils.draw_with_border(x, y, line, colours[0], colours[1], font, draw)
+            y = y + height
+
+        pilimg.save("img.png")
+        return "img.png", simg.source, text
+
 
 if __name__ == "__main__":
-    main()
+    print(main())
 
 
     
