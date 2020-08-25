@@ -83,14 +83,34 @@ class DownloadedImage:
     def __exit__(self, type, value, traceback):
         os.remove(self.filename)
 
-if __name__ == "__main__":
-    # print(get_image(get_random_searchtag()))
+def main():
+    try:
+        simg = get_image(get_random_searchtag())
+    except ConnectionError:
+        main()
 
-    simg = get_image(get_random_searchtag())
     with DownloadedImage(simg.imurl) as impath:
         img = cv2.imread(impath)
 
-        cv2.imshow("img, ", img)
-        cv2.waitkey(0)
+        cascade = cascade = cv2.CascadeClassifier(os.path.join("lbpcascade_animeface", "lbpcascade_animeface.xml"))
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        gray = cv2.equalizeHist(gray)
+        
+        faces = cascade.detectMultiScale(gray,
+                                        # detector options
+                                        scaleFactor = 1.1,
+                                        minNeighbors = 5,
+                                        minSize = (24, 24))
+        for (x, y, w, h) in faces:
+            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
+        cv2.imshow("Press <q> to exit", img)
+        cv2.waitKey(0)
+
+if __name__ == "__main__":
+    main()
+
+
+    
 
 
