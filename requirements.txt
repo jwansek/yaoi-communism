@@ -1,8 +1,8 @@
 Shapely==1.7.1
 colorthief==0.2.1
-opencv_python==4.1.1.26
+opencv_python_headless
 requests==2.18.4
 lxml==4.5.2
-dataclasses==0.7
+dataclasses
 Pillow==7.2.0
 twython==3.8.2

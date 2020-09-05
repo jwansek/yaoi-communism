@@ -1,3 +1,6 @@
+import os
+os.chdir("/root/yaoi-communism")
+
 from twython import Twython
 import get_images
 
@@ -13,8 +16,4 @@ def post():
     get_images.logging.info("Posted to twitter.")
 
 if __name__ == "__main__":
-    import time
-
-    while True:
-        post()
-        time.sleep(60*60)
+    post()
