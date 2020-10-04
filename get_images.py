@@ -85,6 +85,13 @@ def get_num_pages(tags):
     else:
         return int(int(urllib.parse.parse_qs(page_element.get("href"))["pid"][0]) / (5*8))
 
+def fix_source_url(url):
+    if "pixiv.net" in url or "pximg.net" in url: 
+        if requests.get(url).status_code == 403:
+            return "https://www.pixiv.net/en/artworks/%s" % url.split("/")[-1][:8]                
+
+    return url 
+
 def append_blacklisted(id_):
     with open(CONFIG["blacklist"], "a") as f:
         f.write(str(id_) + "\n")
@@ -116,13 +123,11 @@ def main(draw_faces = False):
         simg = get_image(get_random_searchtag())
     except ConnectionError:
         logging.warning("Retried since couldn't get source...")
-        main()
-        return
+        return main()
 
     if id_is_blacklisted(simg.id):
         logging.info("Retried, already posted image...")
-        main()
-        return
+        return main()
 
     append_blacklisted(simg.id)
 
@@ -159,7 +164,7 @@ def main(draw_faces = False):
             y = y + height
 
         pilimg.save("img.png")
-        return "img.png", simg.source, text
+        return "img.png", fix_source_url(simg.source), text
 
 
 if __name__ == "__main__":

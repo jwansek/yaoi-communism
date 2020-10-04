@@ -7,7 +7,10 @@ import get_images
 twitter = Twython(*get_images.CONFIG["twitterapi"].values())
 
 def post():
-    impath, source, text = get_images.main()
+    images = get_images.main()
+    while images is None:
+        images = get_images.main()
+    impath, source, text = images
     with open(impath, "rb") as img:
         response = twitter.upload_media(media = img)
         message = f"{text} ({source})"

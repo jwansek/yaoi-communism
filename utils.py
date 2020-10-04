@@ -26,30 +26,6 @@ def draw_with_border(x, y, message, color_fill, color_border, font, draw):
 
     draw.text((x, y), message, fill=color_fill, font=font)
 
-
-def detect(filename):
-    result = subprocess.run(
-        [
-            "conda",
-            "activate",
-            "detection",
-            "&&",
-            "python",
-            "anime-face-detector/main.py ",
-            "-i",
-            filename,
-            "-o",
-            "output.json",
-        ],
-        shell=True,
-        stdout=subprocess.DEVNULL,
-    )
-    with open("output.json", "r") as f:
-        output = json.load(f)
-        print(output)
-    return [f["bbox"] for f in output[filename]]
-
-
 def set_font(image, message, font_name="fonts/Caveat-Bold.ttf"):
     # keep increasing font size until the font area is 1/5th the size of image
     font_size = 10
@@ -137,3 +113,4 @@ def get_quote(p):
     with open(p, "r", encoding="utf-8") as f:
         lines = f.read().splitlines()
         return random.choice(lines)
+
