@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from PIL import Image, ImageDraw
+from lxml.html import parse
 from io import StringIO
 from lxml import etree
 import requests
@@ -85,10 +86,21 @@ def get_num_pages(tags):
     else:
         return int(int(urllib.parse.parse_qs(page_element.get("href"))["pid"][0]) / (5*8))
 
+def check_pixiv_404(url):
+    text = requests.get(url).text
+    return text[text.find("<title>") + 7 : text.find("</title>")] == "イラストコミュニケーションサービス[pixiv]"
+
 def fix_source_url(url):
-    if "pixiv.net" in url or "pximg.net" in url: 
-        return "https://www.pixiv.net/en/artworks/%s" % url.split("/")[-1][:8]                
-    return url 
+    parsed = urllib.parse.urlparse(url)
+    if parsed.netloc == "www.pixiv.net":
+        return "https://www.pixiv.net/en/artworks/" + urllib.parse.parse_qs(parsed.query)["illust_id"][0]
+    elif parsed.netloc in ["bishie.booru.org", "www.secchan.net"]:
+        return ConnectionError("Couldn't get source")
+    elif "pximg.net" in parsed.netloc or "pixiv.net" in parsed.netloc:
+        return "https://www.pixiv.net/en/artworks/" + parsed.path.split("/")[-1][:8]
+    elif parsed.netloc == "twitter.com":
+        return url.replace("twitter.com", "nitter.eda.gay")
+    return url
 
 def append_blacklisted(id_):
     with open(CONFIG["blacklist"], "a") as f:
@@ -125,6 +137,10 @@ def main(draw_faces = False):
 
     if id_is_blacklisted(simg.id):
         logging.info("Retried, already posted image...")
+        return main()
+
+    if check_pixiv_404(fix_source_url(simg.source)):
+        logging.warning("Skipping since pixiv linked 404'd")
         return main()
 
     append_blacklisted(simg.id)

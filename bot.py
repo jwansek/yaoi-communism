@@ -1,5 +1,5 @@
 import os
-os.chdir("/root/yaoi-communism")
+os.chdir("/home/eden/yaoi-communism")
 
 from twython import Twython
 import get_images
