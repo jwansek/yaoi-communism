@@ -4,6 +4,8 @@ os.chdir("/home/eden/yaoi-communism")
 from twython import Twython
 import get_images
 
+os.environ["SSL_CERT_DIR"] = "/etc/ssl/certs"
+
 twitter = Twython(*get_images.CONFIG["twitterapi"].values())
 
 def post():
