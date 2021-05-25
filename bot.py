@@ -1,5 +1,5 @@
 import os
-os.chdir("/home/eden/yaoi-communism")
+os.chdir("/app")
 
 from twython import Twython
 import get_images

@@ -18,4 +18,12 @@ Designed to be run once an hour using a cron job.
 
 - `python3 bot.py`
 
+## running in docker
+
+- `sudo docker-compose build`
+
+- `sudo docker-compose up -d`
+
+Should do everything by itself if you set the config file correctly
+
 ![Example image](https://pbs.twimg.com/media/EgSA-hVXoAIXLbB?format=jpg&name=large)
