@@ -18,12 +18,16 @@ Designed to be run once an hour using a cron job.
 
 - `python3 bot.py`
 
-## running in docker
+## Running in docker
 
 - `sudo docker-compose build`
 
 - `sudo docker-compose up -d`
 
 Should do everything by itself if you set the config file correctly
+
+To manually run (for testing):
+
+`sudo docker run -it --entrypoint python3 --rm jwansek/yaoi-communism /app/bot.py`
 
 ![Example image](https://pbs.twimg.com/media/EgSA-hVXoAIXLbB?format=jpg&name=large)

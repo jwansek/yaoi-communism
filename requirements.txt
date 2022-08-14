@@ -1,9 +1,10 @@
+cmake<3.23
 Shapely==1.7.1
 colorthief==0.2.1
-opencv_python_headless
+opencv_python_headless==4.5.4.60
 requests==2.18.4
 lxml==4.5.2
 dataclasses
-pillow==7.2.0
+pillow
 twython==3.8.2
 pymysql

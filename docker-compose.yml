@@ -2,6 +2,7 @@ version: '3'
 
 services:
     cron:
+        container_name: yaoi-communism
         build:
             context: .
             dockerfile: Dockerfile
