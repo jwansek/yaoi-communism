@@ -1,23 +1,37 @@
 import os
-os.chdir("/app")
+os.chdir(os.path.dirname(__file__))
 
-from twython import Twython
 import get_images
+import tweepy
 
-os.environ["SSL_CERT_DIR"] = "/etc/ssl/certs"
+def twitter_post(message, impath):
+    auth = tweepy.OAuth1UserHandler(
+        get_images.CONFIG["twitterapi"]["consumer_key"], 
+        get_images.CONFIG["twitterapi"]["consumer_secret"],
+        get_images.CONFIG["twitterapi"]["access_token"],
+        get_images.CONFIG["twitterapi"]["access_token_secret"],
+    )
 
-twitter = Twython(*get_images.CONFIG["twitterapi"].values())
+    api = tweepy.API(auth)
+
+    media_upload = api.simple_upload(impath)
+    media_id = media_upload.media_id
+
+    client = tweepy.Client(
+        **get_images.CONFIG["twitterapi"]
+    )
+
+    response = client.create_tweet(text = message, media_ids = [media_id])
+    get_images.logging.info(str(response))
+    return response
 
 def post():
     images = get_images.main()
     while images is None:
         images = get_images.main()
-    impath, source, text = images
-    with open(impath, "rb") as img:
-        response = twitter.upload_media(media = img)
-        message = f"{text} ({source})"
-        out = twitter.update_status(status=message, media_ids=[response["media_id"]])
 
+    impath, source, text = images
+    twitter_post("%s (%s)" % (text, source), impath)
     get_images.logging.info("Posted to twitter.")
 
 if __name__ == "__main__":
