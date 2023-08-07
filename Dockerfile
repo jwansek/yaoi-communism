@@ -3,7 +3,7 @@ MAINTAINER Eden Attenborough "eda@e.email"
 ENV TZ=Europe/London
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update -y
-RUN apt-get install -y tzdata python3-pip build-essential pkg-config cron libjpeg-dev zlib1g-dev libfreetype6-dev
+RUN apt-get install -y tzdata python3-pip build-essential pkg-config cron libjpeg-dev zlib1g-dev libfreetype6-dev libgeos-dev libxml2-dev libxslt-dev
 RUN mkdir app
 COPY . /app
 WORKDIR /app
