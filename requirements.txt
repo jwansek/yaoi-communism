@@ -1,7 +1,7 @@
 cmake<3.23
 Shapely==1.7.1
 colorthief==0.2.1
-opencv_python_headless==4.5.4.60
+opencv_python_headless
 requests
 lxml
 dataclasses

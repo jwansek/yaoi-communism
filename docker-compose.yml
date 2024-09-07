@@ -6,8 +6,9 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        image: jwansek/yaoi-communism
+        image: reg.reaweb.uk/yaoi-communism
         network_mode: host
         volumes:
+          - ./config.json:/app/config.json
           - ./yc.log:/app/yc.log
           - ./posted_images.csv:/app/posted_images.csv
