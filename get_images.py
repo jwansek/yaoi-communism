@@ -99,7 +99,9 @@ def fix_source_url(url):
     elif "pximg.net" in parsed.netloc or "pixiv.net" in parsed.netloc:
         return "https://www.pixiv.net/en/artworks/" + parsed.path.split("/")[-1][:8]
     elif parsed.netloc == "twitter.com":
-        return url.replace("twitter.com", "nitter.eda.gay")
+        return url.replace("twitter.com", "nitter.net")
+    elif parsed.netloc == "x.com":
+        return url.replace("x.com", "nitter.net")
     return url
 
 def append_blacklisted(id_):
